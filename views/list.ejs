@@ -1,0 +1,60 @@
+<%- include("header") -%>
+  <!--
+The 'include' function is used to inject the content of 'header.ejs' into this template.
+The '-' in the tags (<%- -%>) trims the newline characters from the output, keeping the HTML tidy.
+-->
+
+  <div class="box" id="heading">
+    <h1>
+      <%= listTitle %>
+    </h1>
+    <!--
+  'listTitle' is a variable passed from the Express route. It is escaped and inserted into the HTML,
+  which means special characters (like <, >, &, etc.) will be converted to their HTML entities to prevent XSS attacks.
+  -->
+  </div>
+
+  <div class="box">
+    <!--
+  A loop is started here to iterate over the 'newListItems' array.
+  'newListItems' is an array of to-do items passed from the Express route.
+  -->
+    <% for (let i=0; i<newListItems.length; i++) { %>
+      <div class="item">
+        <!-- A checkbox is provided for each to-do item. It is not tied to any backend functionality here. -->
+        <input type="checkbox">
+        <!--
+      The current item in the loop is displayed. As with 'listTitle', the content is escaped.
+      This prints each to-do item in the 'newListItems' array within a paragraph tag.
+      -->
+        <p>
+          <%= newListItems[i] %>
+        </p>
+      </div>
+      <% } %>
+        <!-- The loop ends here. -->
+
+        <!--
+    This form is used to submit a new to-do item. The 'action' attribute points to the root URL '/',
+    meaning that the form data will be sent to the server as a POST request to the root route.
+    -->
+        <form class="item" action="/" method="post">
+          <!--
+      An input field for adding new to-do items. The 'name' attribute is important because
+      it's used on the server-side to retrieve the value of this input field from the 'req.body' object.
+      'autocomplete="off"' is used to prevent the browser from auto-completing this field.
+      -->
+          <input type="text" name="newItem" placeholder="New Item" autocomplete="off">
+          <!--
+      The submit button for the form. When clicked, it will submit the form data.
+      The 'name' attribute for the button is set to 'list', but without a value; it serves no purpose in this code.
+      -->
+          <button type="submit" name="list">+</button>
+        </form>
+  </div>
+
+  <%- include("footer") -%>
+    <!--
+Again, the 'include' function is used to inject the content of 'footer.ejs' into this template.
+This keeps the footer content consistent across different templates.
+-->

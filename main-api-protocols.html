@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>API Protocols</h2>
+
+    <table>
+        <tr>
+            <th>Protocol</th>
+            <th>Popularity (0-10)</th>
+            <th>Pros</th>
+            <th>Cons</th>
+            <th>Main Uses</th>
+        </tr>
+        <tr>
+            <td>HTTP/HTTPS (REST)</td>
+            <td>9</td>
+            <td>Widely adopted, easy to use, human-readable</td>
+            <td>Overhead, lack of real-time support</td>
+            <td>Web APIs, web services</td>
+        </tr>
+        <tr>
+            <td>WebSocket</td>
+            <td>7</td>
+            <td>Full-duplex communication, real-time capabilities</td>
+            <td>Complexity, less caching</td>
+            <td>Real-time applications, chat, gaming</td>
+        </tr>
+        <tr>
+            <td>GraphQL</td>
+            <td>8</td>
+            <td>Efficient data retrieval, client-driven queries</td>
+            <td>Complexity for simple requests, potential for over-fetching</td>
+            <td>Modern web and mobile apps</td>
+        </tr>
+        <tr>
+            <td>gRPC</td>
+            <td>7</td>
+            <td>Efficient binary serialization, automatic code generation</td>
+            <td>Complexity, lack of human-readability</td>
+            <td>Microservices, inter-process communication</td>
+        </tr>
+        <tr>
+            <td>MQTT</td>
+            <td>6</td>
+            <td>Lightweight, publish-subscribe pattern</td>
+            <td>Not suitable for large payloads, lack of built-in security</td>
+            <td>IoT, messaging, telemetry</td>
+        </tr>
+        <tr>
+            <td>AMQP (Advanced Message Queuing Protocol)</td>
+            <td>5</td>
+            <td>Robust messaging, support for queues and topics</td>
+            <td>Complexity, may be overkill for simple scenarios</td>
+            <td>Message queuing, distributed systems</td>
+        </tr>
+        <tr>
+            <td>RPC (Remote Procedure Call)</td>
+            <td>6</td>
+            <td>Efficient, language-neutral, procedural</td>
+            <td>May require manual code generation, lack of discoverability</td>
+            <td>Inter-process communication, microservices</td>
+        </tr>
+        <tr>
+            <td>CoAP (Constrained Application Protocol)</td>
+            <td>4</td>
+            <td>Lightweight, designed for constrained devices</td>
+            <td>Not suitable for complex scenarios, limited adoption</td>
+            <td>IoT, constrained environments</td>
+        </tr>
+        <tr>
+            <td>JSON-RPC</td>
+            <td>4</td>
+            <td>Lightweight, human-readable</td>
+            <td>May require manual code generation, lack of built-in features</td>
+            <td>RPC-style communication, microservices</td>
+        </tr>
+        <tr>
+            <td>SOAP (Simple Object Access Protocol)</td>
+            <td>3</td>
+            <td>Robust, built-in security</td>
+            <td>Complexity, XML-based, heavyweight</td>
+            <td>Enterprise web services</td>
+        </tr>
+    </table>
+
+</body>
+
+</html>

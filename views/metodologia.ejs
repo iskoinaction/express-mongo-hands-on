@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentación Técnica - ToDo List</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Open+Sans&display=swap" rel="stylesheet">
+  <style>
+    /* --- ESTILOS COPIADOS DE TU PROYECTO --- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      /* Fondo azul corporativo */
+      background: #3498db; 
+      background-image: url('images/bg.jpg'); /* Si tienes la imagen en ruta relativa */
+      background-size: cover;
+      background-attachment: fixed;
+      font-family: 'Open Sans', sans-serif;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    header { 
+      text-align: center; 
+      padding: 20px; 
+      background: rgba(0, 0, 0, 0.3); 
+      position: relative;
+    }
+    header h1 { font-family: 'Poppins', sans-serif; font-size: 2.5em; color: #fff; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); margin-top: 10px; }
+    
+    /* --- ESTILO DEL BOTÓN VOLVER --- */
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.95);
+      border: 2px solid #fff;
+      border-radius: 8px;
+      padding: 8px 15px;
+      color: #333;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9em;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      z-index: 10;
+    }
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      background-color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .back-btn {
+        position: relative;
+        top: 0; right: 0;
+        display: inline-block;
+        margin-bottom: 15px;
+      }
+    }
+
+    .container { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 30px; }
+    
+    /* Caja Oscura */
+    .tech-intro {
+      text-align: center; padding: 25px; font-family: 'Poppins', sans-serif; color: #fff;
+      background: rgba(0, 0, 0, 0.5); border-radius: 8px; width: 100%; max-width: 800px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .tech-intro h3 { margin-bottom: 10px; color: #f1c40f; }
+
+    /* Contenedor de Tarjetas */
+    .details-wrapper { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; max-width: 1000px; }
+    
+    /* Caja Blanca */
+    .tech-card {
+      background-color: rgba(255, 255, 255, 0.95); border: 2px solid #fff; border-radius: 8px; padding: 20px;
+      width: 100%; max-width: 450px; color: #333; display: flex; flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+    .tech-card:hover { transform: translateY(-3px); }
+    .tech-card h2 { 
+      font-family: 'Poppins', sans-serif; font-size: 1.4em; 
+      border-bottom: 2px solid #3498db; margin-bottom: 15px; text-align: center; color: #2c3e50;
+    }
+    
+    ul { list-style: none; }
+    li { 
+      padding: 10px 0; border-bottom: 1px dashed #ccc; font-size: 0.95em; line-height: 1.5;
+    }
+    li strong { color: #e74c3c; } 
+    
+    footer { background-color: #fff; text-align: center; padding: 10px 0; font-size: 0.9em; color: #333; margin-top: auto; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a class="back-btn" href="/lista_node/">Volver a la Lista</a>
+    <h1>Documentación Técnica</h1>
+  </header>
+
+  <div class="container">
+    
+    <div class="tech-intro">
+      <h3>¿Cómo hemos llegado hasta aquí?</h3>
+      <p>Esta aplicación ha evolucionado desde un prototipo en memoria hasta una solución persistente conectada a la nube. Basada en el repositorio de <a href="https://github.com/fjbanezares/express-mongo-hands-on/tree/main" style="color:#f1c40f;">fjbanezares</a>, se ha adaptado para producción en un entorno VPS con HestiaCP y MongoDB Atlas.</p>
+    </div>
+
+    <div class="details-wrapper">
+      
+      <div class="tech-card">
+        <h2>1. Infraestructura del Servidor</h2>
+        <ul>
+          <li><strong>Gestión de Procesos (PM2):</strong> Uso de PM2 para mantener la aplicación Node.js viva en segundo plano, gestionando reinicios automáticos ante fallos o reboots del sistema.</li>
+          <li><strong>Puerto Interno:</strong> La aplicación corre aislada en el puerto <code>3000</code> (localhost), no expuesta directamente a internet por seguridad.</li>
+          <li><strong>SSL/TLS:</strong> Certificado de seguridad gestionado por el servidor web principal, descargando a Node.js de la encriptación.</li>
+        </ul>
+      </div>
+
+      <div class="tech-card">
+        <h2>2. Reverse Proxy y Rutas</h2>
+        <ul>
+          <li><strong>El Reto de la Subcarpeta:</strong> Despliegue en <code>/lista_node/</code> en lugar de la raíz. Esto requirió reescribir todas las rutas del frontend para evitar errores 404.</li>
+          <li><strong>Solución Apache/Nginx:</strong> Configuración de un <strong>Proxy Inverso</strong> mediante reglas <code>.htaccess</code>. El tráfico público HTTPS se redirige internamente al puerto 3000 de forma transparente.</li>
+          <li><strong>HTML Adaptativo:</strong> Modificación de <code>views/index.ejs</code> para usar rutas relativas y eliminar conflictos de URL base.</li>
+        </ul>
+      </div>
+
+      <div class="tech-card">
+        <h2>3. Optimización de CDN</h2>
+        <ul>
+          <li><strong>El Problema:</strong> La caché estricta de Cloudflare servía versiones antiguas de la lista, impidiendo ver las nuevas tareas al instante de agregarlas.</li>
+          <li><strong>Headers HTTP:</strong> Inyección de cabeceras <code>no-store</code> y <code>Expires: -1</code> desde Express en el HTML del index.</li>
+          <li><strong>Técnica "Caché Buster":</strong> Implementación de un <em>Cache Buster</em> basado en Timestamp. Al redirigir, se añade <code>?v=TIEMPO_ACTUAL</code> a la URL, obligando al navegador y al CDN a descargar una versión fresca de los datos.</li>
+        </ul>
+      </div>
+
+      <div class="tech-card">
+        <h2>4. Persistencia con MongoDB Atlas</h2>
+        <ul>
+          <li><strong>Migración a la Nube:</strong> Evolución del almacenamiento volátil (RAM) a una base de datos NoSQL distribuida en MongoDB Atlas.</li>
+          <li><strong>Seguridad (.env):</strong> Uso de variables de entorno para ocultar las credenciales de conexión (Connection String) y evitar exponer contraseñas en el código fuente.</li>
+          <li><strong>Modelado de Datos:</strong> Creación de un esquema estricto con <strong>Mongoose</strong> (<code>models/Task.js</code>) para validar la estructura de las tareas antes de guardarlas.</li>
+          <li><strong>Firewall:</strong> Configuración de <em>IP Whitelisting</em> en Atlas para autorizar exclusivamente las conexiones entrantes desde el VPS de Contabo.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    To do list &copy; 2025 - Documentación Técnica del fork de Fran Bustos
+  </footer>
+
+</body>
+</html>
