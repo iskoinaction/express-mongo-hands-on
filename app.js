@@ -20,7 +20,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Configuración de Helmet (Permitiendo scripts inline para tu truco de Cloudflare)
+// Configuración de Helmet (Permitiendo scripts inline para bypassear Cloudflare)
 app.use(helmet({
     contentSecurityPolicy: false,
 }));
@@ -62,7 +62,7 @@ app.post('/add', async (req, res) => {
             // Guardamos en Mongo en lugar del array
             await Task.create({ content, listType });
         }
-        // Tu script nuclear para Cloudflare
+        // URL Changer para Cloudflare
         const dest = '/lista_node/?v=' + Date.now();
         res.send(`<script>window.location.replace("${dest}");</script>`);
     } catch (error) {
@@ -78,7 +78,7 @@ app.post('/delete/:id', async (req, res) => {
         // Buscamos por _id y borramos
         await Task.findByIdAndDelete(id);
         
-        // Tu script nuclear para Cloudflare
+        // URL Changer para Cloudflare
         const dest = '/lista_node/?v=' + Date.now();
         res.send(`<script>window.location.replace("${dest}");</script>`);
     } catch (error) {
@@ -90,5 +90,5 @@ app.post('/delete/:id', async (req, res) => {
 // --- SERVIDOR ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+    console.log(`Servidor corriendo en puerto ${PORT}`);
 });
