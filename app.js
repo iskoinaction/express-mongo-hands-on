@@ -1,14 +1,13 @@
-require('dotenv').config(); // Cargar variables de entorno
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
-const Task = require('./models/Task'); // Importamos el modelo
+const Task = require('./models/Task');
 
 const app = express();
 
 // --- CONEXIÓN A MONGODB ---
-// Usamos la variable del archivo .env
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('🟢 Conectado a MongoDB Atlas'))
   .catch(err => console.error('🔴 Error conectando a MongoDB:', err));
@@ -20,7 +19,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Configuración de Helmet (Permitiendo scripts inline para bypassear Cloudflare)
+// Helmet (Permitiendo scripts inline para el fix de Cloudflare)
 app.use(helmet({
     contentSecurityPolicy: false,
 }));
@@ -35,14 +34,35 @@ app.use((req, res, next) => {
 
 // --- RUTAS ---
 
-// 1. MOSTRAR TAREAS (Ahora con async/await)
+// 1. MOSTRAR TAREAS (Lógica Dinámica)
 app.get('/', async (req, res) => {
     try {
-        // Pedimos a la base de datos que busque y filtre
-        const generalTasks = await Task.find({ listType: 'General' }).sort({ createdAt: -1 });
-        const workTasks = await Task.find({ listType: 'Trabajo' }).sort({ createdAt: -1 });
+        // A. Traemos TODAS las tareas ordenadas por fecha (las más nuevas primero)
+        const allTasks = await Task.find().sort({ createdAt: -1 });
+
+        // B. Sacamos los nombres de las listas que existen (para el autocompletado del input)
+        // Usamos Set para que no haya repetidos: ["General", "Trabajo", "Compras"]
+        const existingLists = [...new Set(allTasks.map(task => task.listType))];
+
+        // C. Agrupamos las tareas por su lista en un objeto
+        // Resultado: { "General": [tarea1], "Compras": [tarea2, tarea3] }
+        const tasksByList = {};
         
-        res.render('index', { generalTasks, workTasks });
+        allTasks.forEach(task => {
+            // Si la categoría no existe en el objeto, creamos el array vacío
+            if (!tasksByList[task.listType]) {
+                tasksByList[task.listType] = [];
+            }
+            // Añadimos la tarea a su categoría correspondiente
+            tasksByList[task.listType].push(task);
+        });
+
+        // D. Enviamos todo a la vista (index.ejs)
+        res.render('index', { 
+            tasksByList: tasksByList, 
+            existingLists: existingLists 
+        });
+
     } catch (error) {
         console.error(error);
         res.status(500).send("Error al cargar tareas");
@@ -58,15 +78,17 @@ app.get('/metodologia', (req, res) => {
 app.post('/add', async (req, res) => {
     const { content, listType } = req.body;
     try {
-        if (content) {
-            // Guardamos en Mongo en lugar del array
+        if (content && listType) {
+            // Guardamos en Mongo. Como quitamos el ENUM en el modelo, acepta cualquier nombre.
             await Task.create({ content, listType });
         }
-        // URL Changer para Cloudflare
+        
+        // Script nuclear para Cloudflare (Refresco inmediato)
         const dest = '/lista_node/?v=' + Date.now();
         res.send(`<script>window.location.replace("${dest}");</script>`);
     } catch (error) {
         console.error(error);
+        // En caso de error, volvemos a la lista segura
         res.redirect('/lista_node/');
     }
 });
@@ -75,10 +97,9 @@ app.post('/add', async (req, res) => {
 app.post('/delete/:id', async (req, res) => {
     const id = req.params.id;
     try {
-        // Buscamos por _id y borramos
         await Task.findByIdAndDelete(id);
         
-        // URL Changer para Cloudflare
+        // Script nuclear para Cloudflare
         const dest = '/lista_node/?v=' + Date.now();
         res.send(`<script>window.location.replace("${dest}");</script>`);
     } catch (error) {
@@ -90,5 +111,5 @@ app.post('/delete/:id', async (req, res) => {
 // --- SERVIDOR ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en puerto ${PORT}`);
+    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });

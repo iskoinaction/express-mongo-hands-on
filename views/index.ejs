@@ -10,7 +10,6 @@
     /* --- ESTÉTICA ORIGINAL --- */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      /* Ruta relativa para la imagen */
       background: #3498db url('images/bg.jpg') no-repeat center center fixed;
       background-size: cover;
       font-family: 'Open Sans', sans-serif;
@@ -20,12 +19,11 @@
       min-height: 100vh;
     }
 
-    /* Header estilo original */
     header { 
       text-align: center; 
       padding: 20px; 
       background: rgba(0, 0, 0, 0.3); 
-      position: relative; /* Necesario para posicionar el botón */
+      position: relative;
     }
     header h1 { 
       font-family: 'Poppins', sans-serif; 
@@ -35,7 +33,6 @@
       margin-top: 10px; 
     }
 
-    /* --- BOTÓN DOCUMENTACIÓN --- */
     .doc-btn {
       position: absolute;
       top: 20px;
@@ -58,22 +55,21 @@
       background-color: #fff;
     }
 
-    /* Contenedor principal */
     .container { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 30px; }
     
-    /* 1. El Formulario */
     .form-box {
       text-align: center; padding: 20px; font-family: 'Poppins', sans-serif; color: #fff;
       background: rgba(0, 0, 0, 0.4); border-radius: 8px; width: 100%; max-width: 600px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     .form-box input, .form-box select, .form-box button { padding: 10px; margin: 5px; border-radius: 5px; border: none; font-family: 'Open Sans', sans-serif; }
-    .form-box input { width: 60%; }
+    .form-box input[type="text"]:first-child { width: 50%; } /* Input de tarea más ancho */
+    
     .form-box button { background-color: #fff; color: #333; font-weight: bold; cursor: pointer; transition: transform 0.2s; }
     .form-box button:hover { transform: scale(1.05); }
     
-    /* 2. Las Listas */
     .lists-wrapper { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; }
+    
     .list-card {
       background-color: rgba(255, 255, 255, 0.95); border: 2px solid #fff; border-radius: 8px; padding: 20px;
       width: 100%; max-width: 400px; min-height: 200px; color: #333;
@@ -88,14 +84,8 @@
     
     footer { background-color: #fff; text-align: center; padding: 10px 0; font-size: 0.9em; color: #333; margin-top: auto; }
 
-    /* Ajuste para móviles */
     @media (max-width: 768px) {
-      .doc-btn {
-        position: relative;
-        top: 0; right: 0;
-        display: inline-block;
-        margin-bottom: 15px;
-      }
+      .doc-btn { position: relative; top: 0; right: 0; display: inline-block; margin-bottom: 15px; }
       .form-box input { width: 100%; }
     }
   </style>
@@ -104,60 +94,56 @@
 
   <header>
     <a class="doc-btn" href="metodologia">Documentación del proyecto</a>
-    
     <h1>Listado de cosas por hacer</h1>
   </header>
 
   <div class="container">
+    
     <div class="form-box">
       <h3>Nueva Tarea</h3>
       <form action="add" method="POST">
         <input type="text" name="content" placeholder="¿Qué tienes que hacer?" required autocomplete="off">
-        <select name="listType">
-          <option value="General">General</option>
-          <option value="Trabajo">Trabajo</option>
-        </select>
+        
+        <input type="text" name="listType" list="mis-listas" placeholder="Nombre de lista..." required>
+        
+        <datalist id="mis-listas">
+            <% if (locals.existingLists) { %>
+                <% existingLists.forEach(listName => { %>
+                    <option value="<%= listName %>">
+                <% }) %>
+            <% } %>
+            <option value="General">
+            <option value="Trabajo">
+        </datalist>
+
         <button type="submit">Agregar</button>
       </form>
     </div>
 
     <div class="lists-wrapper">
       
-      <div class="list-card">
-        <h2>General</h2>
-        <ul>
-          <% if (generalTasks && generalTasks.length > 0) { %>
-            <% generalTasks.forEach(task => { %>
-              <li>
-                <span><%= task.content %></span>
-                <form action="delete/<%= task._id %>" method="POST" style="display:inline;">
-                  <button class="delete-btn" type="submit">X</button>
-                </form>
-              </li>
-            <% }) %>
-          <% } else { %>
-            <li style="font-style:italic; color:#777;">No hay tareas pendientes.</li>
-          <% } %>
-        </ul>
-      </div>
+      <% if (locals.tasksByList && Object.keys(tasksByList).length > 0) { %>
+        
+        <% Object.keys(tasksByList).forEach(function(listName) { %>
+            <div class="list-card">
+                <h2><%= listName %></h2> <ul>
+                    <% tasksByList[listName].forEach(task => { %>
+                        <li>
+                            <span><%= task.content %></span>
+                            <form action="delete/<%= task._id %>" method="POST" style="display:inline;">
+                                <button class="delete-btn" type="submit">X</button>
+                            </form>
+                        </li>
+                    <% }) %>
+                </ul>
+            </div>
+        <% }) %>
 
-      <div class="list-card">
-        <h2>Trabajo</h2>
-        <ul>
-          <% if (workTasks && workTasks.length > 0) { %>
-            <% workTasks.forEach(task => { %>
-              <li>
-                <span><%= task.content %></span>
-                <form action="delete/<%= task._id %>" method="POST" style="display:inline;">
-                  <button class="delete-btn" type="submit">X</button>
-                </form>
-              </li>
-            <% }) %>
-          <% } else { %>
-            <li style="font-style:italic; color:#777;">Todo al día en el trabajo.</li>
-          <% } %>
-        </ul>
-      </div>
+      <% } else { %>
+        <div style="color: white; text-align: center; font-style: italic; width: 100%;">
+            <p>No hay listas creadas. ¡Añade tu primera tarea arriba!</p>
+        </div>
+      <% } %>
 
     </div>
   </div>
